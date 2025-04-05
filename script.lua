@@ -1,73 +1,73 @@
 local Players = game:GetService("Players")
 
--- Names of folders/models in Workspace containing particle emitters
 local TARGET_ATTACHMENTS = {"Ring", "Wind"}
 
--- Utility: Get foot parts based on rig type
-local function getFeet(character)
-	local leftFoot = character:FindFirstChild("LeftFoot") or character:FindFirstChild("Left Leg")
-	local rightFoot = character:FindFirstChild("RightFoot") or character:FindFirstChild("Right Leg")
-	return leftFoot, rightFoot
+-- Utility to find left foot (works for R15 and R6)
+local function getLeftFoot(character)
+    return character:FindFirstChild("LeftFoot") or character:FindFirstChild("Left Leg")
 end
 
--- Attach particles to a given foot
-local function attachParticlesToPart(part)
-	if not part then return end
+-- Attach particle emitters to HumanoidRootPart but position over foot
+local function attachParticlesRelativeToFoot(character)
+    local root = character:WaitForChild("HumanoidRootPart")
+    local foot = getLeftFoot(character)
+    if not foot then
+        warn("Foot not found for character:", character.Name)
+        return
+    end
 
-	-- Avoid duplicate attachments
-	if part:FindFirstChild("FootParticles") then return end
+    -- Get world offset between root and foot
+    local offset = foot.Position - root.Position
 
-	local attachment = Instance.new("Attachment")
-	attachment.Name = "FootParticles"
-	attachment.Parent = part -- Attach directly to the foot
+    -- Create attachment
+    local attachment = Instance.new("Attachment")
+    attachment.Name = "FootParticles"
+    attachment.Position = offset -- offset from root to foot
+    attachment.Parent = root
 
-	for _, sourceName in ipairs(TARGET_ATTACHMENTS) do
-		local source = workspace:FindFirstChild(sourceName, true)
-		if source then
-			for _, emitter in ipairs(source:GetChildren()) do
-				if emitter:IsA("ParticleEmitter") then
-					local clone = emitter:Clone()
-					clone.Enabled = true
-					clone.Parent = attachment
-				end
-			end
-		else
-			warn("Missing particle source in Workspace:", sourceName)
-		end
-	end
+    for _, sourceName in ipairs(TARGET_ATTACHMENTS) do
+        local source = workspace:FindFirstChild(sourceName, true)
+        if source then
+            for _, emitter in ipairs(source:GetChildren()) do
+                if emitter:IsA("ParticleEmitter") then
+                    local clone = emitter:Clone()
+                    clone.Enabled = true
+                    clone.Parent = attachment
+                end
+            end
+        else
+            warn("Missing particle source in Workspace:", sourceName)
+        end
+    end
 end
 
--- Setup per-character
+-- Setup character
 local function setupCharacter(character)
-	local humanoid = character:WaitForChild("Humanoid")
+    local humanoid = character:WaitForChild("Humanoid")
 
-	-- Auto-cleanup particles on death
-	humanoid.Died:Connect(function()
-		for _, a in ipairs(character:GetDescendants()) do
-			if a:IsA("Attachment") and a.Name == "FootParticles" then
-				a:Destroy()
-			end
-		end
-	end)
+    humanoid.Died:Connect(function()
+        for _, a in ipairs(character:GetDescendants()) do
+            if a:IsA("Attachment") and a.Name == "FootParticles" then
+                a:Destroy()
+            end
+        end
+    end)
 
-	local leftFoot, rightFoot = getFeet(character)
-	attachParticlesToPart(leftFoot)
-	attachParticlesToPart(rightFoot)
+    attachParticlesRelativeToFoot(character)
 end
 
--- Setup per-player
+-- Player logic
 local function onPlayerAdded(player)
-	player.CharacterAdded:Connect(setupCharacter)
+    player.CharacterAdded:Connect(setupCharacter)
 
-	-- Handle already loaded character
-	if player.Character then
-		setupCharacter(player.Character)
-	end
+    if player.Character then
+        setupCharacter(player.Character)
+    end
 end
 
--- Connect all players
+-- Init
 Players.PlayerAdded:Connect(onPlayerAdded)
 
 for _, player in ipairs(Players:GetPlayers()) do
-	onPlayerAdded(player)
+    onPlayerAdded(player)
 end

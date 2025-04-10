@@ -26,7 +26,7 @@ A powerful admin command system for Roblox games with ban management, player con
 
 ##  Installation
 
-1. **ServerScriptService**  
+1. ## 💻 ServerScriptService
    Create a new `Script` in `ServerScriptService` with:
 
 ```lua

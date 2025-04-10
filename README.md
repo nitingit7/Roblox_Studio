@@ -24,9 +24,9 @@ A powerful admin command system for Roblox games with ban management, player con
 | `/tp [player1] [player2]` | Teleport player1 to player2 | `/tp [from] [to]` | `/tp NewPlayer MentorPlayer` |
 | `/speed [player] [value]` | Set player walkspeed | `/speed [user] [16-100]` | `/speed Runner 50` |
 
-##  Installation
+## 💻 Installation
 
-1. ## 💻 ServerScriptService
+1. **ServerScriptService**
    Create a new `Script` in `ServerScriptService` with:
 
    [Admin Script](ServerScriptService/AdminCommands.lua)

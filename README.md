@@ -29,6 +29,8 @@ A powerful admin command system for Roblox games with ban management, player con
 1. ## 💻 ServerScriptService
    Create a new `Script` in `ServerScriptService` with:
 
+   [Admin Script](ServerScriptService/AdminCommands.lua)
+
 ```lua
 --local DataStoreService = game:GetService("DataStoreService")
 --local bannedStore = DataStoreService:GetDataStore("BannedPlayers")

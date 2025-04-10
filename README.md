@@ -19,7 +19,7 @@ A powerful admin command system for Roblox games with ban management, player con
 | Command | Description | Usage | Example |
 |---------|-------------|-------|---------|
 | `/ban [player]` | Ban a player permanently | `/ban [username]` | `/ban ToxicPlayer` |
-| `/unban [player]` | Unban a player | `/unban ForgivenPlayer` | `/unban GoodPlayer` |
+| `/unban [UserId]` | Unban a player | `/unban ForgivenPlayer` | `/unban GoodPlayer` |
 | `/kick [player] [reason]` | Kick a player | `/kick [username] [reason]` | `/kick RuleBreaker Spamming chat` |
 | `/tp [player1] [player2]` | Teleport player1 to player2 | `/tp [from] [to]` | `/tp NewPlayer MentorPlayer` |
 | `/speed [player] [value]` | Set player walkspeed | `/speed [user] [16-100]` | `/speed Runner 50` |

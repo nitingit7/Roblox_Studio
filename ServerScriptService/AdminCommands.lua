@@ -1,5 +1,3 @@
---local DataStoreService = game:GetService("DataStoreService")
---local bannedStore = DataStoreService:GetDataStore("BannedPlayers")
 local Players = game:GetService("Players")
 local DataStoreService = game:GetService("DataStoreService")
 local BanStore = DataStoreService:GetDataStore("BannedPlayers")

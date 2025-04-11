@@ -2,9 +2,6 @@
 
 A powerful admin command system for Roblox games with ban management, player controls, and moderation tools.
 
-![Admin System Demo](https://via.placeholder.com/800x400.png?text=Admin+Commands+Demo)  
-*(Replace with actual screenshot)*
-
 ## 🛠️ Features
 
 - 🔒 **Ban/Unban System** with DataStore persistence

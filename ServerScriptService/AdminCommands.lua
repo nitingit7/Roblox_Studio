@@ -59,54 +59,6 @@ commands.tp = function(arguments)
 	end
 end
 
---[[commands.unban = function(arguments)
-	local playerName = arguments[1]
-	
-	if playerName then
-		local targetPlayer = FindPlayer(playerName)
-		local useID = 5206990893
-		
-		local success, err = pcall(function()
-			bannedStore:SetAsync(useID, false)
-		end)
-		
-		if success then
-			print("The Player "..playerName.." is unban is successfull")
-		else
-			print("The Unban is Unsuccessfull")
-		end
-	end
-	
-
-
-	if playerName then
-		local success, bannedList = pcall(function()
-			return bannedStore:GetAsync("BannedList")
-		end)
-
-		if success and bannedList then
-			-- Remove the player from the banned list
-			for i, name in ipairs(bannedList) do
-				if name:lower() == playerName:lower() then
-					table.remove(bannedList, i)
-					break
-				end
-			end
-
-			-- Save updated list
-			local saveSuccess, err = pcall(function()
-				bannedStore:SetAsync("BannedList", bannedList)
-			end)
-
-			if saveSuccess then
-				print(playerName .. " has been unbanned.")
-			else
-				warn("Failed to save unban: " .. err)
-			end
-		end
-	end
-end]]
-
 --ChatGPT
 commands.kick = function(args)
 	local targetName = args[1]

@@ -18,7 +18,6 @@ local walkSpeed = 16
 local animator
 local sprintTrack
 
-
 -- Mobile Run Button
 local runButton = Instance.new("TextButton")
 runButton.Size = UDim2.new(0, 100, 0, 50)
@@ -33,72 +32,69 @@ local playerGui = player:WaitForChild("PlayerGui")
 local screenGui = playerGui:FindFirstChild("SprintGui")
 
 if not screenGui then
-	screenGui = Instance.new("ScreenGui")
-	screenGui.Name = "SprintGui"
-	screenGui.ResetOnSpawn = false
-	screenGui.Parent = playerGui
+    screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "SprintGui"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = playerGui
 end
 
 -- Add the button to the GUI
 runButton.Parent = screenGui
 
-
 runButton.MouseButton1Down:Connect(function()
-	sprinting = true
+    sprinting = true
 end)
 
 runButton.MouseButton1Up:Connect(function()
-	sprinting = false
+    sprinting = false
 end)
 
 -- Sprint key on PC
 function handleSprint(actionName, inputState, inputObject)
-	if inputState == Enum.UserInputState.Begin then
-		sprinting = true
-	elseif inputState == Enum.UserInputState.End then
-		sprinting = false
-	end
+    if inputState == Enum.UserInputState.Begin then
+        sprinting = true
+    elseif inputState == Enum.UserInputState.End then
+        sprinting = false
+    end
 end
 
 ContextActionService:BindAction("Sprint", handleSprint, false, Enum.KeyCode.LeftShift)
 
--- Apply speed change while moving
-
+-- Apply speed change and animation direction
 RunService.RenderStepped:Connect(function()
-	if humanoid and character:FindFirstChild("HumanoidRootPart") then
-		local movingForward = UserInputService:IsKeyDown(Enum.KeyCode.W) or UserInputService.TouchEnabled
-		local shouldSprint = sprinting and movingForward
-		humanoid.WalkSpeed = shouldSprint and runSpeed or walkSpeed
+    if humanoid and character:FindFirstChild("HumanoidRootPart") then
+        -- Determine if the player is moving forward
+        local movingForward = UserInputService:IsKeyDown(Enum.KeyCode.W) or UserInputService.TouchEnabled
+        local shouldSprint = sprinting and movingForward
+        humanoid.WalkSpeed = shouldSprint and runSpeed or walkSpeed
 
-		if shouldSprint then
-			if not animator then
-				animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", humanoid)
-			end
-			if not sprintTrack then
-				sprintTrack = animator:LoadAnimation(sprintAnim)
-				sprintTrack.Priority = Enum.AnimationPriority.Action
-				humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0,math.pi,0)
-				wait(0.5)
-				humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0,0,0)
-				
-				
-			end
-			if not sprintTrack.IsPlaying then
-				sprintTrack:Play()
-				sprintTrack:AdjustSpeed(1.5)
-			end
-		else
-			if sprintTrack and sprintTrack.IsPlaying then
-				sprintTrack:Stop()
-			end
-		end
-	end
+        -- Get the character's movement direction
+        local moveDirection = humanoid.MoveDirection
+        if shouldSprint and moveDirection.Magnitude > 0 then
+            -- Normalize the move direction to exclude the Y component (vertical)
+            local flatMoveDirection = Vector3.new(moveDirection.X, 0, moveDirection.Z).Unit
+
+            -- Orient the HumanoidRootPart to face the movement direction
+            local lookAtCFrame = CFrame.new(Vector3.new(0, 0, 0), flatMoveDirection)
+            hrp.CFrame = CFrame.new(hrp.Position) * lookAtCFrame
+
+            -- Load and play the sprint animation
+            if not animator then
+                animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", humanoid)
+            end
+            if not sprintTrack then
+                sprintTrack = animator:LoadAnimation(sprintAnim)
+                sprintTrack.Priority = Enum.AnimationPriority.Action
+            end
+            if not sprintTrack.IsPlaying then
+                sprintTrack:Play()
+                sprintTrack:AdjustSpeed(1.5) -- Keep the speed adjustment
+            end
+        else
+            -- Stop the animation if not sprinting or not moving forward
+            if sprintTrack and sprintTrack.IsPlaying then
+                sprintTrack:Stop()
+            end
+        end
+    end
 end)
-
-
---RunService.RenderStepped:Connect(function()
---	if humanoid and character:FindFirstChild("HumanoidRootPart") then
---		local movingForward = UserInputService:IsKeyDown(Enum.KeyCode.W) or UserInputService.TouchEnabled
---		humanoid.WalkSpeed = (sprinting and movingForward) and runSpeed or walkSpeed
---	end
---end)
